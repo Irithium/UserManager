@@ -40,6 +40,9 @@ module.exports = {
         defaultValue: true,
         type: Sequelize.BOOLEAN,
       },
+      lastActivity: {
+        type: Sequelize.DATE,
+      },
       isBlocked: {
         defaultValue: false,
         type: Sequelize.BOOLEAN,

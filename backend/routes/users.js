@@ -1,5 +1,6 @@
 const express = require("express");
 const { User } = require("../models/");
+const { formatLastActivity } = require("../controllers/userController");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
@@ -15,7 +16,9 @@ router.get("/", async (req, res) => {
       name: user.name,
       email: user.email,
       status: user.status,
-      lastActivity: user.lastActivity,
+      lastActivity: formatLastActivity(user.lastActivity),
+      isAdmin: user.isAdmin,
+      isBlocked: user.isBlocked,
     }));
 
     res.status(200).json(userData);

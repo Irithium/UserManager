@@ -36,6 +36,9 @@ module.exports = (sequelize) => {
         allowNull: false,
         type: DataTypes.DATE,
       },
+      lastActivity: {
+        type: DataTypes.DATE,
+      },
       isAdmin: {
         defaultValue: true,
         type: DataTypes.BOOLEAN,

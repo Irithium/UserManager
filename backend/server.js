@@ -13,8 +13,8 @@ const PORT = process.env.PORT;
 app.use(cors());
 app.use(bodyParser.json());
 
-app.use("/auth", authRoutes);
-app.use("/users", userRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
 app.listen(PORT, async () => {
   try {

@@ -6,3 +6,7 @@ function formatLastActivity(lastActivityDate) {
   const lastActivity = new Date(lastActivityDate);
   return formatDistanceToNow(lastActivity, { addSuffix: true });
 }
+
+module.exports = {
+  formatLastActivity,
+};
