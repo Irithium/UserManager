@@ -1,152 +1,113 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { login } from "../services/auth";
 import toast from "react-hot-toast";
 import { validateEmail, validatePassword } from "../utils/validation";
-import { Link, redirect } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import ReviewsCarousel from "./Reviews";
+import { BiLogIn } from "react-icons/bi";
+import FormComponent from "./Form";
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    error: {
+      email: "",
+      password: "",
+      general: "",
+    },
   });
-  const [validationMessages, setValidationMessages] = useState({
-    email: null,
-    password: null,
-  });
-  const [error, setError] = useState("");
+  const [isDisabled, setIsDisabled] = useState(true);
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  useEffect(() => {
+    if (formData.error.password !== "") {
+      setIsDisabled(true);
+    } else if (formData.error.email !== "") {
+      setIsDisabled(true);
+    } else setIsDisabled(false);
+  }, [formData]);
 
-    if (name === "email") {
-      setValidationMessages({
-        ...validationMessages,
-        email: validateEmail(value),
-      });
-    }
-    if (name === "password") {
-      setValidationMessages({
-        ...validationMessages,
-        password: validatePassword(value),
-      });
-    }
+  const validate = (name, value) => {
+    if (name === "email") return validateEmail(value);
+    if (name === "password") return validatePassword(value);
+    return "";
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
     const emailError = validateEmail(formData.email);
     const passwordError = validatePassword(formData.password);
 
     if (emailError || passwordError) {
-      setValidationMessages({
-        email: emailError,
-        password: passwordError,
-      });
-      setError("Please correct the errors in the form.");
-      toast.error(error);
+      setFormData((prev) => ({
+        ...prev,
+        error: {
+          email: emailError,
+          password: passwordError,
+          general: "Please correct the errors in the form.",
+        },
+      }));
+
+      toast.error("Please correct the errors in the form.");
       return;
     }
 
-    setError("");
-
     try {
       const data = await login(formData);
-
       toast.success("Login successful:", data);
       localStorage.setItem("token", data.token);
-      redirect("/users");
+      navigate("/users");
     } catch (err) {
-      setError(err.message);
+      setFormData((prev) => ({
+        ...prev,
+        error: {
+          ...prev.error,
+          general: err.message,
+        },
+      }));
+      toast.error(err.message);
     }
   };
 
   return (
-    <div className="flex lg:flex-col justify-center h-screen bg-gradient-to-br from-peach-400 to-vermilion-500">
-      <div className="flex flex-col ml-12 justify-center items-center w-1/4 h-fit py-6 bg-white border border-dim_gray-100 rounded-lg text">
-        <h2 className="w-fit my-4  ml-4 px-2 text-2xl text-center font-bold text-dim_gray-200">
-          USERMANAGER
-        </h2>
-        <div className="flex flex-col items-center justify-center text-dim_gray-200 h-full py-2">
-          {error && <p style={{ color: "red" }}>{error}</p>}
-          <form
-            onSubmit={handleSubmit}
-            className="flex-1 flex flex-col justify-center items-center"
-          >
-            <div className="flex items-center justify-center my-4 w-1/2">
-              <div className="relative">
-                <input
-                  type="email"
-                  name="email"
-                  onChange={handleChange}
-                  required
-                  className={`border-b border-black py-1 focus:border-b-2 focus:border-vermilion-500 transition-colors focus:outline-none peer bg-inherit ${
-                    formData.email !== ""
-                      ? "border-b-2 border-vermilion-500 outline-none"
-                      : ""
-                  }`}
-                />
-                <label
-                  htmlFor="email"
-                  className={`absolute left-0 top-1 cursor-text peer-focus:text-xs peer-focus:-top-4 transition-all peer-focus:text-vermilion-400 ${
-                    formData.email !== ""
-                      ? "text-xs text-vermilion-400 -top-4"
-                      : ""
-                  }`}
-                >
-                  Email
-                </label>
-                {validationMessages.email && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {validationMessages.email}
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="flex items-center justify-center my-4 w-1/2">
-              <div className="relative">
-                <input
-                  type="password"
-                  name="password"
-                  onChange={handleChange}
-                  required
-                  className={`border-b border-black py-1 focus:border-b-2 focus:border-vermilion-500 transition-colors focus:outline-none peer bg-inherit ${
-                    formData.password !== ""
-                      ? "border-b-2 border-vermilion-500 outline-none"
-                      : ""
-                  }`}
-                />
-                <label
-                  htmlFor="password"
-                  className={`absolute left-0 top-1 cursor-text peer-focus:text-xs peer-focus:-top-4 transition-all peer-focus:text-vermilion-400 ${
-                    formData.password !== ""
-                      ? "text-xs text-vermilion-400 -top-4"
-                      : ""
-                  }`}
-                >
-                  Password{" "}
-                </label>
-                {validationMessages.password && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {validationMessages.password}
-                  </p>
-                )}
-              </div>
-            </div>
-            <button
-              className="w-full h-fit relative px-4 py-2 font-semibold rounded-lg text-lg text-white bg-vermilion-500 hover:bg-vermilion-500/90 active:top-px active:bg-vermilion-500 transition-all my-4"
-              type="submit"
-            >
-              Log in
-            </button>
-          </form>
+    <div className="content-center h-screen bg-gradient-to-br from-peach-400  to-vermilion-500">
+      <div className="flex flex-col md:flex-row flex-1 justify-center items-center w-full h-full lg:h-[85%] lg:w-4/5 md:bg-black-100/90 md:rounded-lg mx-auto overflow-hidden">
+        <div className="flex flex-col justify-center w-4/5 md:w-3/5 lg:w-2/5 h-auto md:h-full items-center lg:py-6 bg-white rounded-lg md:rounded-r-lg py-4">
+          <h2 className="md:w-fit px-2 text-2xl text-center mx-auto font-bold text-dim_gray-200">
+            USERMANAGER
+          </h2>
+          <div className="flex flex-col items-center justify-center text-dim_gray-200 h-full py-2 w-full">
+            {
+              <FormComponent
+                formData={formData}
+                setFormData={setFormData}
+                validate={validate}
+                onSubmit={handleSubmit}
+                isDisabled={isDisabled}
+                buttonText="Log in"
+                error={formData.error.general}
+              />
+            }
+          </div>
+          <div className="flex flex-row items-center justify-center text-dim_gray-200 pb-4 mt-2 md:mt-0">
+            <p className="px-2">Don't have an account? </p>{" "}
+            <Link to="/register" className="flex flex-row items-center">
+              {" "}
+              <BiLogIn /> <p className="font-bold px-1"> Sign in</p>
+            </Link>
+          </div>
         </div>
-        <div className="items-center justify-center text-dim_gray-200 pb-4">
-          Don't have an account?{" "}
-          <Link to="/register" className="font-bold">
-            {" "}
-            Sign up
-          </Link>
+        <div className="hidden md:flex flex-col items-center justify-center w-3/5 h-4/5 ">
+          <div className="text-gray-100 text-2xl text-center w-3/4 font-semibold leading-relaxed mb-8">
+            <div>
+              Visualize, manage, and grow: the power of your users in one table
+            </div>
+            <div className="text-gray-500 text-sm w-3/4 mx-auto font-medium mt-2">
+              Transform data into action: simplify user management
+            </div>
+          </div>
+
+          <ReviewsCarousel />
         </div>
       </div>
     </div>
