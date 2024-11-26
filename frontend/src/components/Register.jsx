@@ -11,6 +11,7 @@ import {
 import ReviewsCarousel from "./Reviews";
 import { BiLogIn } from "react-icons/bi";
 import FormComponent from "./Form";
+import useAuthStore from "../store/authStore";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -26,6 +27,7 @@ const Register = () => {
   });
   const [isDisabled, setIsDisabled] = useState(true);
   const navigate = useNavigate();
+  const loginUser = useAuthStore((state) => state.login);
 
   const validate = (name, value) => {
     if (name === "name") return validateName(value);
@@ -66,7 +68,7 @@ const Register = () => {
     try {
       const data = await register(formData);
       toast.success("Registration successful:", data);
-
+      loginUser(data.token);
       navigate("/users");
     } catch (err) {
       setFormData((prev) => ({

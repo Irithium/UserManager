@@ -1,17 +1,33 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import UserList from "./components/UserList";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   return (
     <Router>
       <div>
         <Routes>
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/users" element={<UserList />} />
+          <Route
+            path={process.env.REACT_APP_REGISTER_URL}
+            element={<Register />}
+          />
+          <Route path={process.env.REACT_APP_LOGIN_URL} element={<Login />} />
+          <Route
+            path={process.env.REACT_APP_USERS_GET_URL}
+            element={<ProtectedRoute element={UserList} />}
+          />
+          <Route
+            path="/"
+            element={<Navigate to={process.env.REACT_APP_REGISTER_URL} />}
+          />
         </Routes>
       </div>
     </Router>

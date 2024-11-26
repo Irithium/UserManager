@@ -94,11 +94,6 @@ const FormComponent = ({
           </div>
         );
       })}
-      {formData.error.general && (
-        <p className="text-vermilion-500 max-w-[181px] text-xs pb-4">
-          {formData.error.general}
-        </p>
-      )}
       <button
         className={`w-1/2 h-fit relative px-4 mt-4 md:mt-0 py-3 md:py-2 font-semibold rounded-lg text-lg text-white bg-vermilion-500 hover:bg-vermilion-500/90 active:top-px active:bg-vermilion-500 transition-all my-4 max-w-[181px] disabled:opacity-80`}
         disabled={isDisabled}
@@ -106,6 +101,11 @@ const FormComponent = ({
       >
         {buttonText}
       </button>
+      {formData.error.general && (
+        <p className="text-vermilion-500 max-w-[181px] text-xs pb-4">
+          {formData.error.general}
+        </p>
+      )}
     </form>
   );
 };

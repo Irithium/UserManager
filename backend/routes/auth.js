@@ -34,11 +34,15 @@ router.post(
       res.status(201).json({
         message: "User created successfully",
         user: {
-          id: newUser.id,
-          name: newUser.name,
-          email: newUser.email,
-          password: newUser.password,
-          lastActivity: newUser.lastActivity,
+          user: {
+            id: newUser.id,
+            name: newUser.name,
+            email: newUser.email,
+            createdAt: newUser.createdAt,
+            isAdmin: newUser.isAdmin,
+            isBlocked: newUser.isBlocked,
+            updatedAt: newUser.updatedAt,
+          },
         },
       });
     } catch (error) {
@@ -73,7 +77,15 @@ router.post(
 
     res.status(200).json({
       token,
-      user: { id: user.id, name: user.name, email: user.email },
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        createdAt: user.createdAt,
+        isAdmin: user.isAdmin,
+        isBlocked: user.isBlocked,
+        lastActivity: user.lastActivity,
+      },
     });
   }
 );

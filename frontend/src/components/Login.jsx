@@ -7,6 +7,8 @@ import { Link, useNavigate } from "react-router-dom";
 import ReviewsCarousel from "./Reviews";
 import { BiLogIn } from "react-icons/bi";
 import FormComponent from "./Form";
+import useAuthStore from "../store/authStore";
+import userStore from "../store/userStore";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -18,8 +20,12 @@ const Login = () => {
       general: "",
     },
   });
+  const currentUser = userStore((state) => state.currentUser);
+  const loginUser = useAuthStore((state) => state.login);
   const [isDisabled, setIsDisabled] = useState(true);
   const navigate = useNavigate();
+
+  console.log(localStorage);
 
   useEffect(() => {
     if (formData.error.password !== "") {
@@ -55,8 +61,11 @@ const Login = () => {
 
     try {
       const data = await login(formData);
+      console.log(data);
+      await localStorage.setItem("currentUser:", currentUser);
+      await localStorage.removeItem("currentUser ");
       toast.success("Login successful:", data);
-      localStorage.setItem("token", data.token);
+      loginUser(data.token);
       navigate("/users");
     } catch (err) {
       setFormData((prev) => ({
