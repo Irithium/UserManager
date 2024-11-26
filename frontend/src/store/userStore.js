@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 const userStore = create((set) => ({
-  currentUser: null,
+  currentUser: localStorage?.currentUser,
 
   setCurrentUser: (user) => set({ currentUser: user }),
 }));

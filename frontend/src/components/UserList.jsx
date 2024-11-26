@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import useUser from "../store/useUsers";
-import logoIcon from "../../public";
+import logoIcon from "../assets/image/userManager.png";
+import UserTable from "./UserTable";
 
 const UserList = () => {
   const { users, fetchUsers, isLoading } = useUser();
@@ -28,49 +29,38 @@ const UserList = () => {
     );
   }
 
+  console.log(localStorage);
+
   return (
     <div className="user-panel">
-      <header className="header">
-        <div className="logo">Mi Aplicación</div>
-        <div className="user-info">
-          <span className="username">Nombre del Usuario</span>
-          <button className="logout-button">Logout</button>
+      <header className="flex justify-between items-center p-4 bg-gray-800 text-white">
+        <img src={logoIcon} alt={logoIcon} className="w-1/6" />
+        <div className="user-info flex items-center">
+          <span className="username mr-4">{}</span>
+          <button className="logout-button bg-red-500 text-white px-4 py-2 rounded">
+            Logout
+          </button>
         </div>
       </header>
 
-      <main className="main-content">
-        <div className="documentation">
-          <h2>Documentación</h2>
-          <p>
-            Aquí puedes encontrar información sobre cómo usar la aplicación.
-          </p>
+      <main className="p-4">
+        <div className="documentation mb-4">
+          <h2 className="text-2xl font-bold">Documentation</h2>
+          <p>Here you can find some information about how to use this app</p>
         </div>
 
-        <div className="user-table">
-          <h2>Lista de Usuarios</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Última Actividad</th>
-                <th>Fecha de Creación</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Usuario 1</td>
-                <td>usuario1@example.com</td>
-                <td>2023-10-01</td>
-                <td>2023-01-01</td>
-                <td>
-                  <button className="block-button">Bloquear</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div>
+          <input
+            type="text"
+            name="search"
+            placeholder="Buscar por nombre o email..."
+            value={searchTerm}
+            onChange={handleSearch}
+            className="border p-2 rounded mb-4 w-full"
+          />
         </div>
+
+        <UserTable users={filteredUsers} />
       </main>
     </div>
   );

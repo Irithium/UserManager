@@ -22,6 +22,13 @@ const useUser = create((set) => ({
   setUsers: (users) => set({ users }),
 
   setFilteredUsers: (filteredUsers) => set({ filteredUsers }),
+
+  blockUser: (userId) =>
+    set((state) => ({
+      users: state.users.map((user) =>
+        user.id === userId ? { ...user, isBlocked: !user.isBlocked } : user
+      ),
+    })),
 }));
 
 export default useUser;

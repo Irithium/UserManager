@@ -25,8 +25,6 @@ const Login = () => {
   const [isDisabled, setIsDisabled] = useState(true);
   const navigate = useNavigate();
 
-  console.log(localStorage);
-
   useEffect(() => {
     if (formData.error.password !== "") {
       setIsDisabled(true);
@@ -62,8 +60,8 @@ const Login = () => {
     try {
       const data = await login(formData);
       console.log(data);
+      userStore(data);
       await localStorage.setItem("currentUser:", currentUser);
-      await localStorage.removeItem("currentUser ");
       toast.success("Login successful:", data);
       loginUser(data.token);
       navigate("/users");
