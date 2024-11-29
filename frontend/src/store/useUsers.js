@@ -3,13 +3,11 @@ import api from "../services/api";
 
 const useUser = create((set) => ({
   users: [],
-  filteredUsers: [],
   isLoading: true,
 
   fetchUsers: async () => {
     try {
       const response = await api.get(process.env.REACT_APP_USERS_GET_URL);
-      console.log(response.data);
 
       const data = response.data;
       set({ users: data, filteredUsers: data, isLoading: false });
@@ -19,16 +17,9 @@ const useUser = create((set) => ({
     }
   },
 
-  setUsers: (users) => set({ users }),
+  setUsers: (users) => set({ users: users }),
 
-  setFilteredUsers: (filteredUsers) => set({ filteredUsers }),
-
-  blockUser: (userId) =>
-    set((state) => ({
-      users: state.users.map((user) =>
-        user.id === userId ? { ...user, isBlocked: !user.isBlocked } : user
-      ),
-    })),
+  addUser: (user) => set((state) => ({ users: [...state.users, user] })),
 }));
 
 export default useUser;

@@ -9,8 +9,11 @@ import Register from "./components/Register";
 import Login from "./components/Login";
 import UserList from "./components/UserList";
 import ProtectedRoute from "./components/ProtectedRoute";
+import useAuthStore from "./store/authStore";
 
 const App = () => {
+  const user = useAuthStore((state) => state.user);
+
   return (
     <Router>
       <div>
@@ -26,7 +29,13 @@ const App = () => {
           />
           <Route
             path="/"
-            element={<Navigate to={process.env.REACT_APP_REGISTER_URL} />}
+            element={
+              user ? (
+                <Navigate to={process.env.REACT_APP_LOGIN_URL} />
+              ) : (
+                <Navigate to={process.env.REACT_APP_USERS_GET_URL} />
+              )
+            }
           />
         </Routes>
       </div>

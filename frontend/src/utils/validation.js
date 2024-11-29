@@ -12,7 +12,7 @@ export const validateEmail = (email) => {
 };
 
 export const validatePassword = (password) => {
-  if (password.length < 6) {
-    return "The password has to be more than 6 characters.";
+  if (password.length < 1) {
+    return "The password is required";
   } else return "";
 };

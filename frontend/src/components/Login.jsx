@@ -8,7 +8,6 @@ import ReviewsCarousel from "./Reviews";
 import { BiLogIn } from "react-icons/bi";
 import FormComponent from "./Form";
 import useAuthStore from "../store/authStore";
-import userStore from "../store/userStore";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -20,7 +19,7 @@ const Login = () => {
       general: "",
     },
   });
-  const currentUser = userStore((state) => state.currentUser);
+  const setUser = useAuthStore((state) => state.setUser);
   const loginUser = useAuthStore((state) => state.login);
   const [isDisabled, setIsDisabled] = useState(true);
   const navigate = useNavigate();
@@ -59,11 +58,10 @@ const Login = () => {
 
     try {
       const data = await login(formData);
+      toast.success("Login successful!", data);
       console.log(data);
-      userStore(data);
-      await localStorage.setItem("currentUser:", currentUser);
-      toast.success("Login successful:", data);
       loginUser(data.token);
+      setUser(data.user);
       navigate("/users");
     } catch (err) {
       setFormData((prev) => ({

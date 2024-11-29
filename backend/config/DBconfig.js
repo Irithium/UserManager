@@ -1,4 +1,5 @@
 const dotenv = require("dotenv");
+const { DB_DIALECT } = require("../constants");
 
 dotenv.config();
 
@@ -8,6 +9,6 @@ module.exports = {
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
-    dialect: "mysql",
+    dialect: DB_DIALECT,
   },
 };

@@ -1,20 +1,20 @@
 const { body, validationResult } = require("express-validator");
 
 exports.validateRegister = [
-  body("name").notEmpty().withMessage("El nombre es obligatorio."),
+  body("name").notEmpty().withMessage("Name is required."),
   body("email")
     .isEmail()
-    .withMessage("Debes proporcionar un correo electrónico válido."),
+    .withMessage("You must provide a valid email address."),
   body("password")
     .isLength({ min: 6 })
-    .withMessage("La contraseña debe tener al menos 6 caracteres."),
+    .withMessage("Password must be at least 6 characters long."),
 ];
 
 exports.validateLogin = [
   body("email")
     .isEmail()
-    .withMessage("Debes proporcionar un correo electrónico válido."),
-  body("password").notEmpty().withMessage("La contraseña es obligatoria."),
+    .withMessage("You must provide a valid email address."),
+  body("password").notEmpty().withMessage("Password is required."),
 ];
 
 exports.handleValidationErrors = (req, res, next) => {

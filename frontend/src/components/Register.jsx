@@ -25,9 +25,10 @@ const Register = () => {
       general: "",
     },
   });
+  const setUser = useAuthStore((state) => state.setUser);
+  const loginUser = useAuthStore((state) => state.login);
   const [isDisabled, setIsDisabled] = useState(true);
   const navigate = useNavigate();
-  const loginUser = useAuthStore((state) => state.login);
 
   const validate = (name, value) => {
     if (name === "name") return validateName(value);
@@ -61,14 +62,15 @@ const Register = () => {
         },
       }));
 
-      toast.error("Please correct the errors in the form.");
+      toast.error(formData.error.general);
       return;
     }
 
     try {
       const data = await register(formData);
-      toast.success("Registration successful:", data);
+      toast.success("Registration successful!", data);
       loginUser(data.token);
+      setUser(data.user);
       navigate("/users");
     } catch (err) {
       setFormData((prev) => ({
