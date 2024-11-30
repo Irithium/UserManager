@@ -53,9 +53,9 @@ const UsersTable = ({ users, sortUsers, blockCheck }) => {
     }
   };
 
-  const handleBlock = () => {
+  const handleBlock = async () => {
     blockCheck();
-    blockUsers(selectedUsers);
+    await blockUsers(selectedUsers);
     if (selectedUsers.length === users.length) {
       toast.error("You have banned yourself");
       logout();
