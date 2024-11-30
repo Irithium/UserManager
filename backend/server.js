@@ -7,7 +7,7 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -15,10 +15,10 @@ app.use(bodyParser.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 
-app.listen(PORT, "0.0.0.0", async () => {
+app.listen(port, "0.0.0.0", async () => {
   try {
     console.log(
-      `Connection has been established successfully in port: ${PORT}.`
+      `Connection has been established successfully in port: ${port}.`
     );
   } catch (error) {
     console.error("Unable to connect to the database:", error);
