@@ -15,12 +15,15 @@ app.use(bodyParser.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 
-app.listen(port, "0.0.0.0", async () => {
+const startServer = async () => {
   try {
-    console.log(
-      `Connection has been established successfully in port: ${port}.`
-    );
+    console.log("Connection has been established successfully.");
+    app.listen(port, "0.0.0.0", () => {
+      console.log(`Server is running on port: ${port}.`);
+    });
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
-});
+};
+
+startServer();

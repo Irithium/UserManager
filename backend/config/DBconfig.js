@@ -1,10 +1,11 @@
-const dotenv = require("dotenv");
-const { DB_DIALECT } = require("../constants");
+// const dotenv = require("dotenv");
+const { DB_DIALECT } = require("../constants.js");
 
-dotenv.config();
+require("dotenv").config();
 
 module.exports = {
   development: {
+    use_env_variable: "DATABASE_URL",
     username: process.env.DB_USER,
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
@@ -12,6 +13,7 @@ module.exports = {
     dialect: DB_DIALECT,
   },
   production: {
+    use_env_variable: "DATABASE_URL",
     username: process.env.DB_USER,
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
