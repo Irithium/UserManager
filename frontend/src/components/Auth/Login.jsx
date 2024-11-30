@@ -59,7 +59,6 @@ const Login = () => {
     try {
       const data = await login(formData);
       toast.success("Login successful!", data);
-      console.log(data);
       loginUser(data.token);
       setUser(data.user);
       navigate("/users");

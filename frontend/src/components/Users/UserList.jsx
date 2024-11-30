@@ -53,9 +53,13 @@ const UserList = () => {
 
   return (
     <div className="user-panel overflow-x-auto lg:overflow-auto h-screen">
-      <header className="flex justify-between items-center p-4 bg-gray-800 text-white w-fit mx-auto">
-        <img src={logoIcon} alt={logoIcon} className="w-1/4 md:w-1/5" />
-        <div className="user-info flex items-center bg-dim_gray-800 text-dim_gray-100 p-2 md:px-4 md:py-2 rounded-lg">
+      <header className="sticky top-0 flex justify-between items-center px-4 max-h-28 bg-gray-800 text-white w-full mx-auto z-10 lg:rounded-b-md">
+        <img
+          src={logoIcon}
+          alt={logoIcon}
+          className="w-1/5 md:1/6 lg:w-1/12 md:p-4"
+        />
+        <div className="user-info flex items-center bg-dim_gray-800 text-dim_gray-100 px-2 py-1 md:px-4 md:py-2 rounded-lg">
           <span className="md:text-lg font-semibold mr-4">
             {JSON.parse(localStorage.getItem("user")).name}
           </span>
@@ -64,7 +68,7 @@ const UserList = () => {
       </header>
 
       <main className="p-0 md:px-4 py-6 ">
-        <form className="form relative mb-3 mx-auto lg:mx-0 w-fit">
+        <form className="form mb-3 mx-auto lg:mx-0 w-fit relative">
           <button className="absolute left-2 -translate-y-1/2 top-1/2 p-1">
             <IoIosSearch size={20} />
           </button>

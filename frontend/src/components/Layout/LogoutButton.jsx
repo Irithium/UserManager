@@ -15,7 +15,7 @@ const LogoutButton = () => {
   return (
     <button
       onClick={handleLogout}
-      className="group flex items-center justify-start w-11 h-11 bg-red-600 rounded-full cursor-pointer relative overflow-hidden transition-all duration-200 shadow-lg hover:w-32 hover:rounded-lg active:translate-x-1 active:translate-y-1"
+      className="group flex items-center justify-start w-8 md:w-8 lg:w-10 h-8 md:h-9 lg:h-10  bg-red-600 rounded-full cursor-pointer relative overflow-hidden transition-all duration-200 shadow-lg hover:w-32 hover:rounded-lg active:translate-x-1 active:translate-y-1"
     >
       <div className="flex items-center justify-center w-full transition-all duration-300 group-hover:justify-start group-hover:px-3">
         <MdOutlineLogin className="size-5 md:size-6" />

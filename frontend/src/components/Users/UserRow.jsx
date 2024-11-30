@@ -14,17 +14,24 @@ const UserRow = ({ user, onSelect, isSelected }) => {
           onChange={onSelect}
         />
       </td>
-      <td className="px-2 md:px-0 py-2 hidden md:table-cell ">
+      <td className="px-2 md:px-0 py-2 ">
         <div className="flex flex-row items-center gap-1">
           {user.isBlocked === true ? <ImBlocked className="size-3" /> : ""}
           {user.name}{" "}
         </div>
       </td>
-      <td className="px-2 md:px-0 py-2">{user.email}</td>
-      <td className="text-center px-2 md:px-0 py-2">{user.lastActivity}</td>
-      <td className="text-center px-2 md:px-0 py-2 hidden md:table-cell">
-        {user.createdAt}
+      <td className="px-2 md:px-0 py-2 overflow-auto">
+        <div className="flex flex-row items-center gap-1 ">
+          {user.isBlocked === true ? (
+            <ImBlocked className="size-3 md:hidden" />
+          ) : (
+            ""
+          )}{" "}
+          {user.email}
+        </div>
       </td>
+      <td className="text-center px-2 md:px-0 py-2">{user.lastActivity}</td>
+      <td className="text-center px-2 md:px-0 py-2 ">{user.createdAt}</td>
     </tr>
   );
 };
