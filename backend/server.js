@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 
-app.listen(PORT, async () => {
+app.listen(PORT, "0.0.0.0", async () => {
   try {
     console.log(
       `Connection has been established successfully in port: ${PORT}.`
