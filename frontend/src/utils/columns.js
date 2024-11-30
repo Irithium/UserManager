@@ -1,6 +1,6 @@
 export const columns = [
-  { name: "Username", value: "name" },
+  { name: "Name", value: "name" },
   { name: "Email", value: "email" },
-  { name: "Last Activity", value: "lastActivity" },
-  { name: "Date Added", value: "createdAt" },
+  { name: "Last seen", value: "lastActivity" },
+  { name: "Created", value: "createdAt" },
 ];

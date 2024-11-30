@@ -74,7 +74,7 @@ const UsersTable = ({ users, sortUsers, blockCheck }) => {
   };
 
   return (
-    <div className="user-table flex flex-col max-md:overflow-scroll justify-center items-center">
+    <div className="user-table flex flex-col max-md:overflow-x-auto ">
       <div className="flex flex-col md:flex-row justify-between items-center gap-2 my-2 mx-auto w-full">
         <h2 className="text-french_gray-100 text-sm md:text-lg lg:text-xl font-semibold ">
           All Users ({users.length})
@@ -128,14 +128,14 @@ const UsersTable = ({ users, sortUsers, blockCheck }) => {
           </div>
         </div>
       </div>
-      <table className="container md:rounded-lg overflow-hidden max-w-full p-4">
+      <table className="container md:rounded-lg overflow-hidden max-w-full md:p-4 overflow-x-auto">
         <thead>
           <tr className="text-french_gray-100 font-semibold bg-peach-600 rounded-lg overflow-hidden">
             <th className="px-2 lg:px-2 md:py-2">
               <input
                 id="selectAll"
-                className=" transition-all duration-500 ease-in-out hover:scale-110 checked:scale-100 w-5"
-                value="selectAll"
+                className=" transition-all duration-500 ease-in-out hover:scale-110 checked:scale-100 w-3 lg:w-5"
+                value="selectAll "
                 checked={
                   users.length !== 0
                     ? selectedUsers.length === users.length
@@ -148,7 +148,7 @@ const UsersTable = ({ users, sortUsers, blockCheck }) => {
             {columns.map((header, index) => {
               return (
                 <th
-                  className={`mx-2 md:px-0 md:py-2 text-xs lg:text-base sm:max-w-40 `}
+                  className={`px-1 md:px-0 md:py-2 text-xs lg:text-base max-sm:max-w-32 max-sm:overflow-scroll text-ellipsis whitespace-nowrap `}
                   onClick={() => handleSort(header.value)}
                   key={index}
                 >
