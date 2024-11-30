@@ -22,3 +22,14 @@ This is the backend of the application, designed to handle server logic, user ma
 2. Run `npm install` to install the dependencies.
 3. Create a `.env` file and configure your environment variables.
 4. Run `npm start` to start the server.
+
+## Routes
+
+- https://usermanager-production-fa04.up.railway.app/api/users
+- https://usermanager-production-fa04.up.railway.app/api/users/current
+- https://usermanager-production-fa04.up.railway.app/api/users/block
+- https://usermanager-production-fa04.up.railway.app/api/users/unblock
+- https://usermanager-production-fa04.up.railway.app/api/users/sort
+- https://usermanager-production-fa04.up.railway.app/api/users/filter
+- https://usermanager-production-fa04.up.railway.app/api/auth/register
+- https://usermanager-production-fa04.up.railway.app/api/auth/login

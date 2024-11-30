@@ -24,16 +24,27 @@ const UserList = () => {
   }, [fetchUsers]);
 
   const blockCheck = async () => {
-    const response = await api.get(`/users/current/${user.id}`);
+    try {
+      const response = await api.get(`/users/current/${user.id}`);
+      console.log(response.data);
 
-    updateUser(response.data);
-    let isBlocked = JSON.parse(localStorage.getItem("user")).isBlocked;
+      updateUser(response.data);
+      let isBlocked = JSON.parse(localStorage.getItem("user")).isBlocked;
 
-    if (isBlocked) {
-      toast.error("You have been banned.");
-      logout();
-      navigate("/login");
-      return;
+      if (isBlocked) {
+        toast.error("You have been banned.");
+        logout();
+        navigate("/login");
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+
+      if (error.status === 404) {
+        toast.error("Your account have been deleted.");
+        logout();
+        navigate("/login");
+      }
     }
   };
 
