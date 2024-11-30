@@ -1,18 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
-import Register from "./components/Register";
-import Login from "./components/Login";
-import UserList from "./components/UserList";
 import ProtectedRoute from "./components/ProtectedRoute";
-import useAuthStore from "./store/authStore";
+import useAuthStore from "./store/useAuthStore";
+import Register from "./components/Auth/Register";
+import UserList from "./components/Users/UserList";
+import Login from "./components/Auth/Login";
 
 const App = () => {
   const user = useAuthStore((state) => state.user);
+  const initializeUser = useAuthStore((state) => state.initializeUser);
+
+  useEffect(() => {
+    initializeUser();
+  }, [initializeUser]);
 
   return (
     <Router>

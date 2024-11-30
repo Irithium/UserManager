@@ -1,16 +1,20 @@
-import useAuthStore from "../store/authStore";
+import useAuthStore from "../store/useAuthStore";
 import useUser from "../store/useUsers";
-import api from "./api";
+import api from "../services/api";
+import toast from "react-hot-toast";
 
 const useUserService = () => {
-  const setUser = useAuthStore((state) => state.setUser);
+  const user = useAuthStore((state) => state.user);
+  const updateUser = useAuthStore((state) => state.updateUser);
   const { fetchUsers } = useUser();
   const { setUsers } = useUser();
 
   const blockUsers = async (userIds) => {
     try {
       await api.put("/users/block", { userIds });
-      setUser();
+      const response = await api.get(`/users/current/${user.id}`);
+
+      updateUser(response.data);
       fetchUsers();
     } catch (error) {
       console.error("Error blocking users:", error);
@@ -35,14 +39,27 @@ const useUserService = () => {
     }
   };
 
-  const sortUsers = async (sortBy, order = "desc") => {
+  const sortUsers = async (sortBy, order = "desc", status) => {
     try {
       const response = await api.get(
-        `/users/sort?sortBy=${sortBy}&order=${order}`
+        `/users/sort?sortBy=${sortBy}&order=${order}&status=${status}`
       );
       setUsers(response.data);
     } catch (error) {
-      console.error("Error sorting users:", error);
+      toast.error("Error sorting users:", error);
+    }
+  };
+
+  const filterUsers = async (status) => {
+    try {
+      const response = await api.get("/users/filter", {
+        params: { status },
+      });
+      console.log(response);
+
+      setUsers(response.data);
+    } catch (error) {
+      toast.error(error.response.data.message);
     }
   };
 
@@ -51,6 +68,7 @@ const useUserService = () => {
     unblockUsers,
     deleteUsers,
     sortUsers,
+    filterUsers,
   };
 };
 

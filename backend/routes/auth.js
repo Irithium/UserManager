@@ -7,9 +7,10 @@ const {
   validateRegister,
   validateLogin,
 } = require("../middlewares/authMiddleware");
-const { formatLastActivity } = require("../controllers/userController");
-const router = express.Router();
 const { API_ENDPOINTS, ERROR_MESSAGES } = require("../constants");
+const { formatLastActivity } = require("../utils/formatters");
+
+const router = express.Router();
 
 router.post(
   API_ENDPOINTS.REGISTER,
@@ -17,14 +18,14 @@ router.post(
   validateRegister,
   async (req, res) => {
     const { name, email, password } = req.body;
-    const existingUser = await User.findOne({ where: { email } });
-    if (existingUser) {
-      return res.status(400).json({ message: ERROR_MESSAGES.EMAIL_IN_USE });
-    }
 
     try {
-      const hashedPassword = await bcrypt.hash(password, 10);
+      const existingUser = await User.findOne({ where: { email } });
+      if (existingUser) {
+        return res.status(400).json({ message: ERROR_MESSAGES.EMAIL_IN_USE });
+      }
 
+      const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = await User.create({
         name,
         email,
@@ -37,52 +38,53 @@ router.post(
       });
 
       res.status(201).json({
-        message: "User created successfully.",
+        message: "User  created successfully.",
         token,
         user: {
           id: newUser.id,
           name: newUser.name,
           email: newUser.email,
-          createdAt: newUser.createdAt,
+          createdAt: formatLastActivity(newUser.createdAt),
           isAdmin: newUser.isAdmin,
           isBlocked: newUser.isBlocked,
-          updatedAt: newUser.updatedAt,
+          lastActivity: formatLastActivity(newUser.lastActivity),
         },
       });
     } catch (error) {
       if (error.name === "SequelizeUniqueConstraintError") {
         return res.status(400).json({ message: ERROR_MESSAGES.EMAIL_IN_USE });
       }
-
       res.status(500).json({ message: ERROR_MESSAGES.REGISTER_FAILED });
     }
   }
 );
 
 router.post(
-  "/login",
+  API_ENDPOINTS.LOGIN,
   validateLogin,
   handleValidationErrors,
   async (req, res) => {
     const { email, password } = req.body;
-    const user = await User.findOne({ where: { email } });
 
-    if (!user) {
-      return res.status(404).json({ message: ERROR_MESSAGES.USER_NOT_FOUND });
-    }
-
-    if (user.isBlocked) {
-      return res.status(403).json({ message: ERROR_MESSAGES.ACCOUNT_BLOCKED });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
-      return res
-        .status(400)
-        .json({ message: ERROR_MESSAGES.INVALID_CREDENTIALS });
-    }
     try {
+      const user = await User.findOne({ where: { email } });
+      if (!user) {
+        return res.status(404).json({ message: ERROR_MESSAGES.USER_NOT_FOUND });
+      }
+
+      if (user.isBlocked) {
+        return res
+          .status(403)
+          .json({ message: ERROR_MESSAGES.ACCOUNT_BLOCKED });
+      }
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res
+          .status(400)
+          .json({ message: ERROR_MESSAGES.INVALID_CREDENTIALS });
+      }
+
       await User.update(
         { lastActivity: new Date() },
         { where: { id: user.id } }
@@ -105,7 +107,7 @@ router.post(
         },
       });
     } catch (error) {
-      res.status(400).json({ message: ERROR_MESSAGES.LOGIN_FAILED });
+      res.status(500).json({ message: ERROR_MESSAGES.LOGIN_FAILED });
     }
   }
 );

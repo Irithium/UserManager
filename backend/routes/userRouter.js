@@ -2,7 +2,13 @@
 const express = require("express");
 const { User } = require("../models");
 const jwt = require("jsonwebtoken");
-const { formatLastActivity } = require("../controllers/userController");
+const { formatLastActivity } = require("../utils/formatters");
+const {
+  ERROR_MESSAGES,
+  STATUS_CODES,
+  SUCCESS_MESSAGES,
+} = require("../constants");
+
 const router = express.Router();
 
 const authenticateJWT = async (req, res, next) => {
@@ -10,8 +16,8 @@ const authenticateJWT = async (req, res, next) => {
 
   if (!token) {
     return res
-      .status(401)
-      .json({ message: "Access denied. No token provided." });
+      .status(STATUS_CODES.UNAUTHORIZED)
+      .json({ message: ERROR_MESSAGES.ACCESS_DENIED });
   }
 
   try {
@@ -19,18 +25,22 @@ const authenticateJWT = async (req, res, next) => {
     req.user = await User.findByPk(decoded.id);
 
     if (!req.user) {
-      return res.status(404).json({ message: "User not found." });
+      return res
+        .status(STATUS_CODES.NOT_FOUND)
+        .json({ message: ERROR_MESSAGES.USER_NOT_FOUND });
     }
 
     if (req.user.isBlocked) {
       return res
-        .status(403)
-        .json({ message: "Your account is blocked. Please contact support." });
+        .status(STATUS_CODES.FORBIDDEN)
+        .json({ message: ERROR_MESSAGES.ACCOUNT_BLOCKED });
     }
 
     next();
   } catch (error) {
-    return res.status(403).json({ message: "Invalid token." });
+    return res
+      .status(STATUS_CODES.FORBIDDEN)
+      .json({ message: ERROR_MESSAGES.INVALID_TOKEN });
   }
 };
 
@@ -38,14 +48,20 @@ router.get("/current/:id", async (req, res) => {
   const userId = req.params.id;
 
   if (!userId) {
-    return res.status(400).json({ message: "User ID is required" });
+    return res
+      .status(STATUS_CODES.NOT_FOUND)
+      .json({ message: ERROR_MESSAGES.USER_ID_REQUIRED });
   }
 
-  const user = await User.findOne({ where: { id: userId } });
-
-  console.log(user);
-
   try {
+    const user = await User.findOne({ where: { id: userId } });
+
+    if (!user) {
+      return res
+        .status(STATUS_CODES.NOT_FOUND)
+        .json({ message: ERROR_MESSAGES.USER_NOT_FOUND });
+    }
+
     const newUser = {
       id: user.id,
       name: user.name,
@@ -58,18 +74,18 @@ router.get("/current/:id", async (req, res) => {
 
     res.status(200).json(newUser);
   } catch (error) {
-    res.status(500).json({ message: "Error retrieving user data." });
+    res
+      .status(STATUS_CODES.SERVER_ERROR)
+      .json({ message: ERROR_MESSAGES.ERROR_RETRIEVING_USER });
   }
 });
 
 router.get("/", async (req, res) => {
   try {
-    const users = await User.findAll({
-      order: [["createdAt", "DESC"]],
-    });
+    const users = await User.findAll({ order: [["createdAt", "DESC"]] });
 
     if (!users || users.length === 0) {
-      return res.send("There are no users in the table");
+      return res.send(ERROR_MESSAGES.EMPTY_USERS);
     }
 
     const usersData = users.map((user) => ({
@@ -85,64 +101,54 @@ router.get("/", async (req, res) => {
 
     res.status(200).json(usersData);
   } catch (error) {
-    console.log(error);
-
+    console.error(error);
     res
-      .status(500)
-      .json({ error: "Error finding users, please refresh and try again" });
+      .status(STATUS_CODES.SERVER_ERROR)
+      .json({ error: ERROR_MESSAGES.NO_USERS_FOUND });
   }
 });
 
-router.put("/block", authenticateJWT, async (req, res) => {
+const updateBlockStatus = async (req, res, blockStatus) => {
   const { userIds } = req.body;
 
   try {
     const users = await User.findAll({ where: { id: userIds } });
 
     if (users.length === 0) {
-      return res.status(404).json({ message: "No users found." });
+      return res
+        .status(STATUS_CODES.NOT_FOUND)
+        .json({ message: ERROR_MESSAGES.USER_NOT_FOUND });
     }
 
     req.user.lastActivity = new Date();
     await req.user.save();
 
     for (const user of users) {
-      user.isBlocked = true;
+      user.isBlocked = blockStatus;
       await user.save();
     }
 
-    res.json({ message: "Users have been blocked successfully." });
+    res.json({
+      message: `Users have been ${
+        blockStatus ? "blocked" : "unblocked"
+      } successfully.`,
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "An error occurred while blocking users." });
+    res.status(STATUS_CODES.SERVER_ERROR).json({
+      message: `An error occurred while ${
+        blockStatus ? "blocking" : "un blocking"
+      } users.`,
+    });
   }
-});
+};
 
-router.put("/unblock", authenticateJWT, async (req, res) => {
-  const { userIds } = req.body;
-  try {
-    const users = await User.findAll({ where: { id: userIds } });
+router.put("/block", authenticateJWT, (req, res) =>
+  updateBlockStatus(req, res, true)
+);
 
-    if (users.length === 0) {
-      return res.status(404).json({ message: "No users found." });
-    }
-
-    for (const user of users) {
-      user.isBlocked = false;
-      await user.save();
-    }
-
-    req.user.lastActivity = new Date();
-    await req.user.save();
-
-    res.json({ message: "Users have been unblocked successfully." });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "An error occurred while unblocking users." });
-  }
-});
+router.put("/unblock", authenticateJWT, (req, res) =>
+  updateBlockStatus(req, res, false)
+);
 
 router.put("/delete", authenticateJWT, async (req, res) => {
   const { userIds } = req.body;
@@ -151,7 +157,9 @@ router.put("/delete", authenticateJWT, async (req, res) => {
     const users = await User.findAll({ where: { id: userIds } });
 
     if (users.length === 0) {
-      return res.status(404).json({ message: "No users found." });
+      return res
+        .status(STATUS_CODES.NOT_FOUND)
+        .json({ message: ERROR_MESSAGES.USER_NOT_FOUND });
     }
 
     for (const user of users) {
@@ -161,20 +169,19 @@ router.put("/delete", authenticateJWT, async (req, res) => {
     req.user.lastActivity = new Date();
     await req.user.save();
 
-    res.json({ message: "Users have been deleted successfully." });
+    res.json({ message: SUCCESS_MESSAGES.DELETE });
   } catch (error) {
     res
-      .status(500)
-      .json({ message: "An error occurred while deleting users." });
+      .status(STATUS_CODES.SERVER_ERROR)
+      .json({ message: ERROR_MESSAGES.ERROR_DELETING_USERS });
   }
 });
 
 router.get("/sort", authenticateJWT, async (req, res) => {
-  const { sortBy, order } = req.query;
+  const { sortBy, order, status } = req.query;
 
   try {
     const orderDirection = order === "asc" ? "ASC" : "DESC";
-
     const orderColumn =
       sortBy === "name"
         ? "name"
@@ -184,7 +191,16 @@ router.get("/sort", authenticateJWT, async (req, res) => {
         ? "lastActivity"
         : "createdAt";
 
+    const whereCondition = {};
+
+    if (status === "blocked") {
+      whereCondition.isBlocked = true;
+    } else if (status === "unblocked") {
+      whereCondition.isBlocked = false;
+    }
+
     const users = await User.findAll({
+      where: whereCondition,
       order: [[orderColumn, orderDirection]],
     });
 
@@ -204,7 +220,49 @@ router.get("/sort", authenticateJWT, async (req, res) => {
 
     res.json(usersData);
   } catch (error) {
-    res.status(500).json({ message: "An error occurred while sorting users." });
+    res
+      .status(STATUS_CODES.SERVER_ERROR)
+      .json({ message: ERROR_MESSAGES.SORT_FAILED });
+  }
+});
+
+router.get("/filter", authenticateJWT, async (req, res) => {
+  const { status } = req.query;
+
+  try {
+    let users;
+
+    if (status === "blocked") {
+      users = await User.findAll({ where: { isBlocked: true } });
+    } else if (status === "unblocked") {
+      users = await User.findAll({ where: { isBlocked: false } });
+    } else {
+      users = await User.findAll();
+    }
+
+    if (!users || users.length === 0) {
+      return res
+        .status(STATUS_CODES.NOT_FOUND)
+        .json({ message: ERROR_MESSAGES.EMPTY_USERS });
+    }
+
+    const usersData = users.map((user) => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      status: user.status,
+      lastActivity: formatLastActivity(user.lastActivity),
+      createdAt: formatLastActivity(user.createdAt),
+      isAdmin: user.isAdmin,
+      isBlocked: user.isBlocked,
+    }));
+
+    res.status(200).json(usersData);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(STATUS_CODES.SERVER_ERROR)
+      .json({ error: ERROR_MESSAGES.NO_USERS_FOUND });
   }
 });
 

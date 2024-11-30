@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { register } from "../services/auth";
+import { register } from "../../services/auth";
 import toast from "react-hot-toast";
-import logoImage from "../assets/image/userManager.png";
+import logoImage from "../../assets/image/userManager.png";
 import { Link, useNavigate } from "react-router-dom";
 import {
   validateEmail,
   validateName,
   validatePassword,
-} from "../utils/validation";
-import ReviewsCarousel from "./Reviews";
+} from "../../utils/validation";
+import ReviewsCarousel from "../Layout/Reviews";
 import { BiLogIn } from "react-icons/bi";
 import FormComponent from "./Form";
-import useAuthStore from "../store/authStore";
+import useAuthStore from "../../store/useAuthStore";
 
 const Register = () => {
   const [formData, setFormData] = useState({

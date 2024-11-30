@@ -1,27 +1,35 @@
 import React, { useState } from "react";
 import UserRow from "./UserRow";
+import useUserService from "../../hooks/useUserService";
+import { useNavigate } from "react-router-dom";
+import useAuthStore from "../../store/useAuthStore";
 import { FaLock, FaLockOpen } from "react-icons/fa6";
 import { MdDelete } from "react-icons/md";
-import { columns } from "../utils/columns";
-import { handleArrow } from "../utils/handleArrow";
-import useUserService from "../services/useUserService";
-import { useNavigate } from "react-router-dom";
-import useAuthStore from "../store/authStore";
+import { columns } from "../../utils/columns";
+import { handleArrow } from "../../utils/handleArrow";
 
 const UsersTable = ({ users, sortUsers, blockCheck }) => {
   const navigate = useNavigate;
   const logout = useAuthStore((state) => state.clearUser);
-  const { blockUsers, unblockUsers, deleteUsers } = useUserService();
+  const { blockUsers, unblockUsers, deleteUsers, filterUsers } =
+    useUserService();
   const [order, setOrder] = useState("desc");
   const [column, setColumn] = useState("createdAt");
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [filterStatus, setFilterStatus] = useState("all");
 
   const handleSort = (column) => {
     blockCheck();
     setColumn(column);
     order === "asc" ? setOrder("desc") : setOrder("asc");
 
-    sortUsers(column, order);
+    sortUsers(column, order, filterStatus);
+  };
+
+  const handleFilterChange = (status) => {
+    setFilterStatus(status);
+    blockCheck();
+    filterUsers(status);
   };
 
   const handleSelectUser = (userId) => {
@@ -73,6 +81,26 @@ const UsersTable = ({ users, sortUsers, blockCheck }) => {
         </h2>
         <div className="flex flex-row items-center gap-3">
           <button
+            onClick={() => handleFilterChange("unblocked")}
+            className="px-2 py-1 h-8 lg:h-9 border-2 border-sky-600 rounded-md content-center hover:scale-105 active:scale-100 transition-all"
+          >
+            Unblocked
+          </button>
+          <button
+            onClick={() => handleFilterChange("blocked")}
+            className="px-2 py-1 h-8 lg:h-9 border-2 border-vermilion rounded-md content-center hover:scale-105 active:scale-100 transition-all"
+          >
+            Blocked
+          </button>
+          <button
+            onClick={() => handleFilterChange("all")}
+            className="px-2 py-1 h-8 lg:h-9 border-2 border-gray-600 rounded-md content-center hover:scale-105 active:scale-100 transition-all"
+          >
+            All
+          </button>
+        </div>
+        <div className="flex flex-row items-center gap-3">
+          <button
             onClick={handleBlock}
             className="flex flex-row items-center px-2 py-1 h-8 lg:h-9 text-xs md:text-sm lg:text-base max-lg:bg-vermilion hover:scale-110 active:scale-100 transition-all border-2 border-vermilion-500 rounded-md text-white lg:text-vermilion-500 font-semibold"
           >
@@ -98,6 +126,7 @@ const UsersTable = ({ users, sortUsers, blockCheck }) => {
           <tr className="text-french_gray-100 font-semibold bg-peach-600 rounded-lg overflow-hidden">
             <th className="px-2 lg:px-2 md:py-2">
               <input
+                id="selectAll"
                 className=" transition-all duration-500 ease-in-out hover:scale-110 checked:scale-100 w-5"
                 value="selectAll"
                 checked={
