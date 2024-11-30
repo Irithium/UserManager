@@ -55,6 +55,10 @@ const UsersTable = ({ users, sortUsers, blockCheck }) => {
   const handleBlock = () => {
     blockCheck();
     blockUsers(selectedUsers);
+    if (selectedUsers.length === users.length) {
+      logout();
+      navigate("/login");
+    }
     setSelectedUsers([]);
   };
 
