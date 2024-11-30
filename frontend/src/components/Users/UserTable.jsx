@@ -7,10 +7,11 @@ import { FaLock, FaLockOpen } from "react-icons/fa6";
 import { MdDelete } from "react-icons/md";
 import { columns } from "../../utils/columns";
 import { handleArrow } from "../../utils/handleArrow";
+import toast from "react-hot-toast";
 
 const UsersTable = ({ users, sortUsers, blockCheck }) => {
-  const navigate = useNavigate;
-  const logout = useAuthStore((state) => state.clearUser);
+  const navigate = useNavigate();
+  const logout = useAuthStore((state) => state.logout);
   const { blockUsers, unblockUsers, deleteUsers, filterUsers } =
     useUserService();
   const [order, setOrder] = useState("desc");
@@ -56,6 +57,7 @@ const UsersTable = ({ users, sortUsers, blockCheck }) => {
     blockCheck();
     blockUsers(selectedUsers);
     if (selectedUsers.length === users.length) {
+      toast.error("You have banned yourself");
       logout();
       navigate("/login");
     }
