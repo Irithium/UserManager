@@ -17,7 +17,7 @@ const useUserService = () => {
       updateUser(response.data);
       fetchUsers();
     } catch (error) {
-      toast.error("Error blocking users:", error);
+      console.error("Error deleting users." + error);
     }
   };
 
@@ -26,7 +26,7 @@ const useUserService = () => {
       await api.put("/users/unblock", { userIds });
       fetchUsers();
     } catch (error) {
-      toast.error("Error unblocking users:" + error);
+      console.error("Error deleting users." + error);
     }
   };
 
@@ -38,7 +38,7 @@ const useUserService = () => {
       updateUser(response.data);
       fetchUsers();
     } catch (error) {
-      toast.error("Error deleting users:" + error);
+      console.error("Error deleting users." + error);
     }
   };
 
